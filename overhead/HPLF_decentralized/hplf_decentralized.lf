@@ -1,5 +1,6 @@
 target Python {
-  coordination: centralized
+  tracing: true,
+  coordination: decentralized
 }
 
 preamble {=
@@ -12,7 +13,7 @@ preamble {=
   def serialization(session, data):
       buffer = []
       pickled_data = pickle.dumps(data, protocol=5, buffer_callback=buffer.append)
-      data_object_id = session.put(pickled_data)
+      data_object_id = pickled_data
 
       # Store memoryview in Plasma
       mem_view = buffer[0].raw()
@@ -32,12 +33,12 @@ preamble {=
   def deserialization(session, data_object_id, buffer_id):
       #memory getting
       buffer = session.get_buffers([buffer_id])
-      pickled_data = session.get(data_object_id)
+      pickled_data = data_object_id
       data = pickle.loads(pickled_data, buffers=buffer)
       return data
 =}
 
-reactor clientReactor {
+reactor clientReactor(STP_offset = 10000 s) {
   input global_parameters
   output updated_parameters
 
@@ -53,7 +54,7 @@ reactor clientReactor {
   =}
 }
 
-reactor serverReactor {
+reactor serverReactor(STP_offset = 10000 s) {
   output global_parameters
   input[4] updated_parameters
   state round_num
@@ -93,7 +94,7 @@ reactor serverReactor {
     self.prev_time = cur_time
 
     # Update the global parameters with the results from the first client for the next round
-    id = serialization(session, self.results[0].copy())
+    id = serialization(session, self.results[0])
     global_parameters.set(id)
   =}
 }

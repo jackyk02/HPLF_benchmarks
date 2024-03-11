@@ -8,10 +8,10 @@ result_df = pd.read_excel('plot.xlsx')  # Update this path as necessary
 
 # Clean the data
 filtered_df = result_df.dropna().reset_index(drop=True)
-filtered_df.columns = ['Configuration', '1MB', '10MB', '25MB', '50MB']
+filtered_df.columns = ['Configuration', '1MB', '5MB', '10MB', '25MB', '50MB']
 
 # Data for plotting
-object_sizes = ['1MB', '10MB', '25MB', '50MB']
+object_sizes = ['1MB', '5MB', '10MB', '25MB', '50MB']
 configurations = filtered_df['Configuration'].tolist()
 data = filtered_df.iloc[:, 1:].values.T  # Transpose to align with object sizes
 
