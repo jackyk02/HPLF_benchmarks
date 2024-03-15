@@ -2,6 +2,7 @@ import pickle
 import numpy as np
 import time
 import matplotlib.pyplot as plt
+import openpyxl
 
 # Adjusted function definitions for serialization and deserialization
 
@@ -61,38 +62,43 @@ deserialize_throughput_5 = object_size_mb / \
 throughput_serialize = [serialize_throughput_4, serialize_throughput_5]
 throughput_deserialize = [deserialize_throughput_4, deserialize_throughput_5]
 
-peak_memory_usage = [1063.01, 2062.81]  # Placeholder values
+# Save throughput values to Excel
+wb = openpyxl.Workbook()
+sheet = wb.active
+sheet.title = "Throughput"
 
-# Adjusting the left subplot to display throughput
-fig, axs = plt.subplots(1, 2, figsize=(16, 6), dpi=100)
+# Write headers
+sheet.cell(row=1, column=1, value="Protocol")
+sheet.cell(row=1, column=2, value="Serialize Throughput (MB/s)")
+sheet.cell(row=1, column=3, value="Deserialize Throughput (MB/s)")
 
-# Throughput Plot for Serialization and Deserialization
-ax1 = axs[0]
-rects1 = ax1.bar(x - width/2, throughput_serialize, width,
-                 label='Serialize', color='skyblue')
-rects2 = ax1.bar(x + width/2, throughput_deserialize, width,
-                 label='Deserialize', color='lightgreen')
+# Write data
+for i, label in enumerate(labels, start=2):
+    sheet.cell(row=i, column=1, value=label)
+    sheet.cell(row=i, column=2, value=throughput_serialize[i-2])
+    sheet.cell(row=i, column=3, value=throughput_deserialize[i-2])
 
-ax1.set_ylabel('Throughput (MB/s)')
-ax1.set_title('Throughput of Serializing and Deserializing 5MB Object')
-ax1.set_xticks(x)
-ax1.set_xticklabels(labels)
-ax1.legend(loc='upper left')
-ax1.bar_label(rects1, padding=3, fmt='%.2f')
-ax1.bar_label(rects2, padding=3, fmt='%.2f')
-ax1.set_yscale("log")
-ax1.grid(True, which="both", ls="--", linewidth=0.5)
+# Save the workbook
+wb.save("throughput.xlsx")
 
-# Peak Memory Usage Plot with adjustments
-ax2 = axs[1]
-rects3 = ax2.bar(labels, peak_memory_usage, width, color='royalblue')
-
-ax2.set_ylabel('Megabytes (MB)')
-ax2.set_title('Peak Memory Usage for 1GB Object')
-ax2.set_xticks(x)
-ax2.set_xticklabels(labels)
-ax2.bar_label(rects3, padding=3, fmt='%.2f')
-ax2.grid(True, which="major", ls="--", linewidth=0.5)
-
-plt.tight_layout()
-plt.show()
+# # Adjusting the left subplot to display throughput
+# fig = plt.figure()
+# plt.rcParams.update({'font.size': 14})
+# # Throughput Plot for Serialization and Deserialization
+# ax1 = fig
+# rects1 = ax1.bar(x - width/2, throughput_serialize, width,
+#                  label='Serialize', color='skyblue')
+# rects2 = ax1.bar(x + width/2, throughput_deserialize, width,
+#                  label='Deserialize', color='lightgreen')
+#
+# ax1.set_ylabel('Throughput (MB/s)')
+# ax1.set_title('Throughput of Serializing and Deserializing 5MB Object')
+# ax1.set_xticks(x)
+# ax1.set_xticklabels(labels)
+# ax1.legend(loc='upper left')
+# ax1.bar_label(rects1, padding=3, fmt='%.2f')
+# ax1.bar_label(rects2, padding=3, fmt='%.2f')
+# ax1.set_yscale("log")
+# ax1.grid(True, which="both", ls="--", linewidth=0.5)
+#
+# fig.show()

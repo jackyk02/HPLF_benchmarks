@@ -5,7 +5,7 @@ import numpy as np
 
 # Load the updated data from an Excel file
 result_df = pd.read_excel('plot.xlsx')  # Update this path as necessary
-
+plt.rcParams.update({'font.size': 18})
 # Clean the data
 filtered_df = result_df.dropna().reset_index(drop=True)
 filtered_df.columns = ['Configuration', '1MB', '5MB', '10MB', '25MB', '50MB']
@@ -33,13 +33,14 @@ for i, (config, color) in enumerate(zip(configurations, colors)):
 
 plt.xlabel('Object Size')
 plt.ylabel('Latency (milliseconds)')
-plt.title(
-    'Mean Latency of Broadcast and Gather on 4 nodes\nwith Different Object Sizes')
+#plt.title(
+#    'Mean Latency of Broadcast and Gather on 4 nodes\nwith Different Object Sizes')
 plt.xticks(index + bar_width * 2, object_sizes)
 plt.yscale("log")
 
 plt.legend()
 plt.tight_layout()
+
 
 # Save the updated plot to a file
 plt.savefig("plot.png")  # Update this path as necessary
